@@ -1,0 +1,23 @@
+/**
+ * Authentic Badge block styles.
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+.authenticimages-badge {
+	display: block;
+	width: fit-content;
+	background-color: var(--authenticimages-badge-bg-color, unset);
+	color: var(--authenticimages-badge-text-color, unset);
+	border-radius: var(--authenticimages-badge-border-radius, unset);
+	border-color: var(--authenticimages-badge-border-color, unset);
+	border-style: var(--authenticimages-badge-border-style, unset);
+	border-width: var(--authenticimages-badge-border-width, unset);
+	font-weight: var(--authenticimages-badge-font-weight, unset);
+	font-size: calc(var(--authenticimages-context-font-size, 1em) * (1cap / 1em) * var(--authenticimages-badge-scale) / 100 * var(--authenticimages-badge-density) / 100 / (1cap / 1em));
+	padding: calc(1cap * (100 - var(--authenticimages-badge-density)) / var(--authenticimages-badge-density) / 2);
+	line-height: 1;
+	text-box-trim: trim-both;
+	text-box-edge: cap alphabetic;
+}
+

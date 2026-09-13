@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "authenticimages/authentic-badge",
+	"title": "Authentic Badge",
+	"category": "woocommerce",
+	"description": "Displays a badge on product pages.",
+	"usesContext": [ "postId" ],
+	"supports": {
+		"html": false
+	},
+	"textdomain": "authenticimages"
+}

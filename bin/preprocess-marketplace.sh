@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Copyright 2026 Adrian Duffell
+# Licensed under the GNU General Public License v2.0 or later.
+
+for file in authenticimages.php src/index.ts; do
+	sed -E \
+		's@^([[:space:]]*)//[[:space:]]*(#(ifdef|endif).*)$@\1\2@' \
+		"$file" |
+		unifdef -t -ULICENSE -UUPDATES > "$file.tmp"
+
+	mv "$file.tmp" "$file"
+done
+
+# Delete License and Updates subpackage files.
+grep -rEl --include='*.php' '@subpackage (License|Updates)' includes |
+while IFS= read -r file; do
+	rm "$file"
+done
+
+# Strip Update URI plugin header.
+sed '/^[[:space:]]*\* Update URI:/d' authenticimages.php > authenticimages.php.tmp &&
+	mv authenticimages.php.tmp authenticimages.php

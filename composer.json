@@ -1,0 +1,37 @@
+{
+	"name": "adrianduffell/authenticimages",
+	"description": "Authentic Images for WooCommerce.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Adrian Duffell",
+			"homepage": "https://adrianduffell.com"
+		}
+	],
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"yoast/phpunit-polyfills": "^2.0",
+		"phpunit/phpunit": "^9.6",
+		"wp-coding-standards/wpcs": "^3.0",
+		"slevomat/coding-standard": "^8.22"
+	},
+	"config": {
+		"optimize-autoloader": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "7.4.0"
+		}
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"curl -L https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/plugins/woocommerce/tests/legacy/framework/helpers/class-wc-helper-product.php -o vendor/class-wc-helper-product.php"
+		],
+		"lint": "phpcs -s",
+		"test": "phpunit"
+	}
+}

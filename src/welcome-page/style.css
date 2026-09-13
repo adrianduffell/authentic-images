@@ -1,0 +1,111 @@
+/**
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+body.toplevel_page_authenticimages-welcome {
+	background-color: #fff;
+
+	h1 {
+		font-size: 2.8rem;
+		font-weight: 600;
+		text-align: center;
+
+		@media (max-width: 600px) {
+			font-size: 2rem;
+		}
+	}
+
+	input {
+		text-align: center;
+	}
+
+	p {
+		margin: 2em auto 2em auto;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+	#authenticimages-welcome-page-root {
+		position: relative;
+		display: grid;
+
+		@media (min-width: 600px) {
+			place-items: center;
+			min-height: calc(100vh - 150px);
+		}
+
+		@media (max-width: 600px) {
+			margin: 24px;
+		}
+	}
+
+	.authenticimages-welcome-page {
+		max-width: 480px;
+		text-align: center;
+	}
+
+	.authenticimages-welcome-page__dismiss {
+		position: absolute;
+		right: 0;
+		text-decoration: none;
+		top: 0;
+	}
+
+	.authenticimages-welcome-page__dismiss:hover {
+		text-decoration: none;
+	}
+
+	.authenticimages-welcome-page__description {
+		font-size: 1.2rem;
+		font-weight: 300;
+		margin: 3rem auto 1rem;
+		max-width: 90%;
+		text-align: center;
+	}
+
+	.authenticimages-welcome-page__license-key-input {
+		margin: 4em auto;
+
+		.components-text-control__input {
+			font-family: monospace;
+			font-size: 1.2rem;
+			font-weight: 500;
+			border-color: rgb(255 179 0 / 0.6);
+			box-shadow:
+				0 0 0 1px rgb(255 179 0 / 0.15),
+				0 0 30px 8px rgb(255 179 0 / 0.12),
+				0 0 60px 24px rgb(255 179 0 / 0.06);
+		}
+	}
+
+	.authenticimages-welcome-page__validation--error,
+	.authenticimages-welcome-page__validation--invalid {
+		color: #c00;
+	}
+
+	.authenticimages-welcome-page__notice {
+		max-width: 300px;
+		margin-top: 3em;
+	}
+
+	.authenticimages-welcome-page__button-row {
+		margin-top: 2rem;
+	}
+
+	.authenticimages-welcome-page__error {
+		left: 0;
+		width: 100%;
+		text-align: center;
+		color: #c00;
+		position: absolute;
+		margin-top: 2rem;
+	}
+
+}

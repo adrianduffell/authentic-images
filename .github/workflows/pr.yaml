@@ -1,0 +1,190 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pr-checks:
+    name: ${{ matrix.build.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        build:
+          - name: Self-distributed build
+            id: self-dist
+            preprocess: preprocess
+            phpunit_flags: ""
+            e2e_flags: ""
+
+          - name: Marketplace build
+            id: marketplace
+            preprocess: preprocess:marketplace
+            phpunit_flags: "--exclude-group license,updates"
+            e2e_flags: "--grep-invert @premium-license"
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install system packages
+      run: sudo apt-get install -y unifdef subversion
+
+    - name: Preprocess
+      run: npm run ${{ matrix.build.preprocess }}
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist
+
+    - name: Run post-install script
+      run: composer run-script post-install-cmd --no-interaction
+
+    - name: Run PHP lint
+      run: composer run lint
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v5
+      with:
+        node-version-file: package.json
+        cache: npm
+
+    - name: Install npm dependencies
+      run: npm ci
+
+    - name: Build
+      run: npm run build
+
+    - name: Check VERSION constant matches plugin header
+      run: bash bin/version-check.sh
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+    - name: Run type check
+      run: npm run typecheck
+
+    - name: Run CSS lint
+      run: npm run lint:css
+
+    - name: Run JS lint
+      run: npm run lint:js
+
+    - name: Run Markdown docs lint
+      run: npm run lint:md-docs
+
+    - name: Install WordPress test suite
+      run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ vars.WORDPRESS_MIN }}
+
+    - name: Install WP-CLI
+      run: |
+        WP_CLI_VERSION=2.10.0
+        WP_CLI_PHAR="wp-cli-${WP_CLI_VERSION}.phar"
+        WP_CLI_BASE_URL="https://github.com/wp-cli/wp-cli/releases/download/v${WP_CLI_VERSION}"
+
+        curl --fail --location --silent --show-error --output "${WP_CLI_PHAR}" "${WP_CLI_BASE_URL}/${WP_CLI_PHAR}"
+
+        chmod +x "${WP_CLI_PHAR}"
+        sudo mv "${WP_CLI_PHAR}" /usr/local/bin/wp
+    - name: Set up WordPress with WP-CLI
+      run: |
+        wp core config \
+          --path=/tmp/wordpress \
+          --dbname=wordpress_test \
+          --dbuser=root \
+          --dbpass=root \
+          --dbhost=127.0.0.1 \
+          --dbprefix=wptests_
+
+    - name: Install WordPress with WP-CLI
+      run: |
+        wp core download \
+          --version=${{ vars.WORDPRESS_MIN }} \
+          --path=/tmp/wordpress \
+          --force
+        wp core install \
+          --path=/tmp/wordpress \
+          --url=http://local.wordpress.test \
+          --title=Example \
+          --admin_user=admin \
+          --admin_password=password \
+          --admin_email=info@example.com \
+          --skip-email
+
+    - name: Check WP loads
+      run: wp core version --path=/tmp/wordpress
+
+    - name: Install WooCommerce
+      run: wp plugin install woocommerce --version=${{ vars.WOOCOMMERCE_MIN }} --activate --path=/tmp/wordpress
+
+    - name: Run Woo setup tasks
+      run: wp cron event run --due-now --path=/tmp/wordpress
+
+    - name: Set up PHP 7.4
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+
+    - name: Install Composer dependencies (PHP 7.4)
+      run: composer install --no-interaction --prefer-dist
+
+    - name: Run PHPUnit (PHP 7.4)
+      run: composer run test -- ${{ matrix.build.phpunit_flags }}
+
+    - name: Set up PHP 8.5
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.5'
+
+    - name: Run PHPUnit (PHP 8.5)
+      run: composer run test -- ${{ matrix.build.phpunit_flags }}
+    
+    - name: Install Playwright browsers
+      run: npx playwright install chromium --with-deps
+
+    - name: Configure WordPress environment
+      run: |
+        cat > .wp-env.override.json <<EOF
+        {
+          "core": "https://wordpress.org/wordpress-${{ vars.WORDPRESS_MAX }}.zip",
+          "plugins": [
+            "https://downloads.wordpress.org/plugin/woocommerce.${{ vars.WOOCOMMERCE_MAX }}.zip"
+          ]
+        }
+        EOF
+        cat .wp-env.override.json
+
+    - name: Start WordPress environment
+      run: npm run wp-env start
+
+    - name: Run E2E tests
+      env:
+        AUTHENTICIMAGES_LICENSE_KEY: ${{ secrets.TEST_LICENSE_KEY }}
+      run: npm run test:e2e -- ${{ matrix.build.e2e_flags }}
+
+    - name: Run classic theme shortcode E2E tests
+      run: THEME=storefront STORE_PAGES=shortcode npm run test:e2e -- tests/e2e/0-bootstrap-theme.spec.js tests/e2e/0-bootstrap-store-pages.spec.js tests/e2e/shopping.spec.js
+
+    - name: Upload Playwright artifacts
+      if: always()
+      uses: actions/upload-artifact@v6
+      with:
+        name: playwright-${{ matrix.build.id }}
+        path: artifacts/

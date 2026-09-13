@@ -1,0 +1,349 @@
+<?php
+/**
+ * Test the update_plugin_hook function.
+ *
+ * @package AuthenticImages
+ * @group updates
+ * @copyright 2026 Adrian Duffell
+ * @license GNU General Public License v2.0 or later
+ */
+
+use function AuthenticImages\deinit_update_plugin;
+use function AuthenticImages\init_settings;
+use function AuthenticImages\init_update_plugin;
+use const AuthenticImages\LICENSE_ACTIVATION_OPTION;
+use const AuthenticImages\LICENSE_KEY_OPTION;
+use const AuthenticImages\LICENSE_STATUS_TRANSIENT;
+use const AuthenticImages\VERSION;
+
+class Test_Update_Plugin_Hook extends WP_UnitTestCase {
+
+	/**
+	 * Mocks the license server response.
+	 *
+	 * @param bool $success Whether the license validation succeeds or fails.
+	 */
+	private function mock_license_server_response( bool $success ): void { //phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) use ( $success ) {
+				if ( strpos( $url, 'https://api.lemonsqueezy.com/v1/licenses/validate' ) !== false ) {
+					return array(
+						'headers'  => array(),
+						'body'     => wp_json_encode(
+							array(
+								'valid' => $success,
+								'meta'  => array(
+									'product_id' => 1279790,
+								),
+							)
+						),
+						'response' => array(
+							'code'    => 200,
+							'message' => 'OK',
+						),
+						'cookies'  => array(),
+						'filename' => null,
+					);
+				}
+
+				return $pre;
+			},
+			10,
+			3
+		);
+	}
+
+	private function mock_license_server_downtime(): void { //phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) {
+				if ( strpos( $url, 'https://api.lemonsqueezy.com/v1/licenses/validate' ) !== false ) {
+					return new WP_Error(
+						'http_request_failed',
+						'Simulated HTTP failure'
+					);
+				}
+				return $pre;
+			},
+			10,
+			3
+		);
+	}
+
+	public function test_returns_false_when_license_activation_is_missing(): void {
+		// Arrange.
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		delete_option( LICENSE_ACTIVATION_OPTION );
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			false,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertFalse( $result );
+	}
+
+	public function test_returns_false_when_cached_active_license_activation_is_invalid(): void {
+		// Arrange.
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		set_transient( LICENSE_STATUS_TRANSIENT, 'active', WEEK_IN_SECONDS );
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'invalid' ) );
+		$previous = array(
+			'slug'    => 'authenticimages',
+			'version' => '1.0.1',
+		);
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			$previous,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertFalse( $result );
+	}
+
+	public function test_returns_previous_update_when_plugin_does_not_match(): void {
+		// Arrange.
+		$this->mock_license_server_response( true );
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		$previous = array(
+			'slug'    => 'foo',
+			'version' => '1.0.0',
+		);
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			$previous,
+			array( 'UpdateURI' => 'https://adrianduffell.store/foo-plugin' ),
+		);
+
+		// Assert.
+		$this->assertSame( $previous, $result );
+	}
+
+	public function test_returns_false_when_remote_request_fails(): void { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		// Arrange.
+		$this->mock_license_server_response( true );
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'abc123', 'activation-id' ) );
+		update_option( LICENSE_KEY_OPTION, 'abc123' );
+
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) {
+				if ( strpos( $url, 'v1/authenticimages/updates' ) !== false ) {
+					return array(
+						'headers'  => array(),
+						'body'     => '',
+						'response' => array(
+							'code'    => 401,
+							'message' => 'Unauthorized',
+						),
+						'cookies'  => array(),
+						'filename' => null,
+					);
+				}
+
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			false,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertFalse( $result );
+	}
+
+	public function test_returns_previous_value_when_response_is_invalid(): void { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		// Arrange.
+		$this->mock_license_server_response( true );
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'abc123', 'activation-id' ) );
+		update_option( LICENSE_KEY_OPTION, 'abc123' );
+
+		$previous = false;
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) {
+				if ( strpos( $url, 'v1/authenticimages/updates' ) !== false ) {
+					return array(
+						'headers'  => array(),
+						'body'     => '',
+						'response' => array(
+							'code'    => 200,
+							'message' => 'OK',
+						),
+						'cookies'  => array(),
+						'filename' => null,
+					);
+				}
+
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			$previous,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertSame( $previous, $result );
+	}
+
+	public function test_sends_current_version_to_update_service(): void { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		// Arrange.
+		$this->mock_license_server_response( true );
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'abc123', 'activation-id' ) );
+		update_option( LICENSE_KEY_OPTION, 'abc123' );
+		$requested_url = '';
+
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) use ( &$requested_url ) {
+				if ( strpos( $url, 'v1/authenticimages/updates' ) !== false ) {
+					$requested_url = $url;
+
+					return array(
+						'headers'  => array(),
+						'body'     => wp_json_encode(
+							array(
+								'version' => '1.0.1',
+								'url'     => 'https://example.com',
+								'package' => 'https://example.com/authenticimages.zip',
+							)
+						),
+						'response' => array(
+							'code'    => 200,
+							'message' => 'OK',
+						),
+						'cookies'  => array(),
+						'filename' => null,
+					);
+				}
+
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		// Act.
+		apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			false,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertSame(
+			add_query_arg( 'version', VERSION, 'https://api.adrianduffell.store/v1/authenticimages/updates' ),
+			$requested_url
+		);
+	}
+
+	public function test_sends_license_activation_and_returns_available_update(): void { // phpcs:ignore Generic.Metrics.NestingLevel.MaxExceeded
+		// Arrange.
+		$this->mock_license_server_response( true );
+		deinit_update_plugin();
+		init_update_plugin();
+		init_settings();
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'abc123', 'activation-id' ) );
+		update_option( LICENSE_KEY_OPTION, 'abc123' );
+		$authorization = '';
+
+		add_filter(
+			'pre_http_request',
+			function ( $pre, $args, $url ) use ( &$authorization ) {
+				if ( strpos( $url, 'v1/authenticimages/updates' ) !== false ) {
+					$authorization = $args['headers']['Authorization'];
+
+					return array(
+						'headers'  => array(),
+						'body'     => wp_json_encode(
+							array(
+								'version' => '1.0.1',
+								'url'     => 'https://example.com',
+								'package' => 'https://example.com/authenticimages.zip',
+							)
+						),
+						'response' => array(
+							'code'    => 200,
+							'message' => 'OK',
+						),
+						'cookies'  => array(),
+						'filename' => null,
+
+					);
+				}
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			false,
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertSame( 'Bearer abc123.activation-id', $authorization );
+		$this->assertIsArray( $result );
+		$this->assertSame( 'authenticimages', $result['slug'] );
+		$this->assertSame( '1.0.1', $result['version'] );
+		$this->assertSame(
+			'https://example.com/authenticimages.zip',
+			$result['package']
+		);
+	}
+
+	public function test_gracefully_handles_exception_when_checking_license(): void {
+		// Arrange.
+		$this->mock_license_server_downtime();
+		update_option( LICENSE_ACTIVATION_OPTION, array( 'valid-license', 'activation-id' ) );
+
+		// Act.
+		$result = apply_filters(
+			'update_plugins_adrianduffell.store', //phpcs:ignore WordPress.NamingConventions.ValidHookName
+			'my-previous-value',
+			array( 'UpdateURI' => 'https://adrianduffell.store/authenticimages' ),
+		);
+
+		// Assert.
+		$this->assertSame( 'my-previous-value', $result );
+	}
+}

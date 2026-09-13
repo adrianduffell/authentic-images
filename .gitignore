@@ -1,0 +1,49 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build files
+build/
+wc-clearance.zip
+
+# Composer
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# PHPUnit
+.phpunit.result.cache
+
+# PHPCS local overrides
+phpcs.xml
+
+# wp-env test artifacts
+artifacts/
+.last-run.json

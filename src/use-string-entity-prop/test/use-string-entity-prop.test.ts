@@ -1,0 +1,165 @@
+/**
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+import { useEntityProp } from '@wordpress/core-data';
+import { renderHook } from '@testing-library/react';
+import useStringEntityProp from '../';
+
+jest.mock( '@wordpress/core-data', () => ( {
+	useEntityProp: jest.fn(),
+} ) );
+
+const mockUseEntityProp = useEntityProp as jest.Mock;
+
+describe( 'useStringEntityProp', () => {
+	test( 'returns string value from entity prop', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [
+			'Authentic',
+			jest.fn(),
+			undefined,
+		] );
+
+		// Act.
+		const { result } = renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+
+		// Assert.
+		expect( result.current[ 0 ] ).toBe( 'Authentic' );
+	} );
+
+	test( 'returns undefined when entity prop is not set', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [
+			undefined,
+			jest.fn(),
+			undefined,
+		] );
+
+		// Act.
+		const { result } = renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+
+		// Assert.
+		expect( result.current[ 0 ] ).toBeUndefined();
+	} );
+
+	test( 'normalizes null entity prop to undefined', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [ null, jest.fn(), undefined ] );
+
+		// Act.
+		const { result } = renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+
+		// Assert.
+		expect( result.current[ 0 ] ).toBeUndefined();
+	} );
+
+	test( 'calls useEntityProp with root, site, and the given key', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [
+			undefined,
+			jest.fn(),
+			undefined,
+		] );
+
+		// Act.
+		renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+
+		// Assert.
+		expect( mockUseEntityProp ).toHaveBeenCalledWith(
+			'root',
+			'site',
+			'authenticimages_badge_label'
+		);
+	} );
+
+	test( 'exposes setter from entity prop', () => {
+		// Arrange.
+		const setValue = jest.fn();
+		mockUseEntityProp.mockReturnValue( [
+			'Authentic',
+			setValue,
+			undefined,
+		] );
+
+		// Act.
+		const { result } = renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+		result.current[ 1 ]( 'Real images' );
+
+		// Assert.
+		expect( setValue ).toHaveBeenCalledWith( 'Real images' );
+	} );
+
+	test( 'setter forwards undefined to clear the value', () => {
+		// Arrange.
+		const setValue = jest.fn();
+		mockUseEntityProp.mockReturnValue( [
+			'Authentic',
+			setValue,
+			undefined,
+		] );
+
+		// Act.
+		const { result } = renderHook( () =>
+			useStringEntityProp( 'authenticimages_badge_label' )
+		);
+		result.current[ 1 ]( undefined );
+
+		// Assert.
+		expect( setValue ).toHaveBeenCalledWith( undefined );
+	} );
+
+	test( 'throws when value is not a string', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [ 42, jest.fn(), undefined ] );
+
+		// Expect.
+		expect( () =>
+			renderHook( () =>
+				useStringEntityProp( 'authenticimages_badge_label' )
+			)
+		).toThrow(
+			'authenticimages setting "authenticimages_badge_label" must be a string'
+		);
+		expect( console ).toHaveErrored();
+	} );
+
+	test( 'does not throw when value is undefined', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [
+			undefined,
+			jest.fn(),
+			undefined,
+		] );
+
+		// Act + Assert: no throw when value is undefined.
+		expect( () =>
+			renderHook( () =>
+				useStringEntityProp( 'authenticimages_badge_label' )
+			)
+		).not.toThrow();
+	} );
+
+	test( 'does not throw when value is null', () => {
+		// Arrange.
+		mockUseEntityProp.mockReturnValue( [ null, jest.fn(), undefined ] );
+
+		// Act + Assert: no throw when value is null.
+		expect( () =>
+			renderHook( () =>
+				useStringEntityProp( 'authenticimages_badge_label' )
+			)
+		).not.toThrow();
+	} );
+} );

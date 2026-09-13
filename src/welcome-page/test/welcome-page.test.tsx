@@ -1,0 +1,480 @@
+/**
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+import type { ReactNode } from 'react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
+import apiFetch from '@wordpress/api-fetch';
+import { WelcomePage } from '../WelcomePage';
+import type { ValidationState } from '../useLicenseValidation';
+import { useLicenseValidation } from '../useLicenseValidation';
+
+const EXPIRES_AT = '2026-03-25T00:00:00.000000Z';
+
+jest.mock( '@wordpress/api-fetch', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+} ) );
+
+jest.mock( '@wordpress/ui', () => ( { Link: 'a' } ) );
+
+jest.mock( '../useLicenseValidation', () => ( {
+	useLicenseValidation: jest.fn(),
+} ) );
+
+jest.mock( '@wordpress/components', () => ( {
+	Button: ( {
+		children,
+		disabled,
+		href,
+		onClick,
+	}: {
+		children: ReactNode;
+		disabled?: boolean;
+		href?: string;
+		onClick?: () => void;
+	} ) =>
+		href ? (
+			<a href={ href }>{ children }</a>
+		) : (
+			<button type="button" disabled={ disabled } onClick={ onClick }>
+				{ children }
+			</button>
+		),
+
+	TextControl: ( {
+		label,
+		value,
+		onChange,
+		onPaste,
+	}: {
+		label: string;
+		value: string;
+		onChange: ( value: string ) => void;
+		onPaste: () => void;
+	} ) => (
+		<input
+			aria-label={ label }
+			value={ value }
+			onChange={ ( event ) => onChange( event.target.value ) }
+			onPaste={ onPaste }
+		/>
+	),
+} ) );
+
+const mockApiFetch = apiFetch as unknown as jest.Mock;
+const mockUseLicenseValidation = jest.mocked( useLicenseValidation );
+const mockHandleLicenseKeyChange = jest.fn();
+
+function arrangeGlobals( {
+	licenseName = '',
+	licenseStatus = 'none',
+	productsUrl = '/wp-admin/edit.php?post_type=product',
+}: {
+	licenseName?: string;
+	licenseStatus?: string;
+	productsUrl?: string;
+} = {} ) {
+	document.cookie = 'AUTHENTICIMAGES_DISMISS_SETUP=; max-age=0; path=/';
+	( window as any ).authenticimagesWelcomePage = {
+		licenseName,
+		licenseStatus,
+		productsUrl,
+	};
+	mockApiFetch.mockReset();
+}
+
+function arrangeValidation( {
+	licenseKey = '',
+	validationState = { status: 'idle' },
+	canActivate = false,
+}: {
+	licenseKey?: string;
+	validationState?: ValidationState;
+	canActivate?: boolean;
+} = {} ) {
+	mockUseLicenseValidation.mockReset();
+	mockHandleLicenseKeyChange.mockReset();
+	mockUseLicenseValidation.mockReturnValue( {
+		licenseKey,
+		validationState,
+		canActivate,
+		handleLicenseKeyChange: mockHandleLicenseKeyChange,
+	} );
+}
+
+test( 'renders the welcome message', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect(
+		screen.getByText( /Thank you for choosing Authentic Images!/i )
+	).toBeInTheDocument();
+	expect( screen.getByLabelText( /Premium license key/i ) ).toHaveValue( '' );
+} );
+
+test.each( [ 'not_found', 'error' ] )(
+	'renders the license re-setup message for the %s license status',
+	( licenseStatus ) => {
+		// Arrange.
+		arrangeGlobals( { licenseStatus } );
+		arrangeValidation();
+
+		// Act.
+		render( <WelcomePage /> );
+
+		// Assert.
+		expect(
+			screen.getByRole( 'heading', { name: 'Authentic Images Setup' } )
+		).toBeInTheDocument();
+		expect(
+			screen.getByText(
+				'The license could not be verified on this site. Enter your premium license key to continue.'
+			)
+		).toBeInTheDocument();
+		expect( screen.getByLabelText( /Premium license key/i ) ).toHaveValue(
+			''
+		);
+	}
+);
+
+test( 'renders the expired license heading and re-setup message', () => {
+	// Arrange.
+	arrangeGlobals( {
+		licenseName: 'Long-term service',
+		licenseStatus: 'expired',
+	} );
+	arrangeValidation();
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect(
+		screen.getByRole( 'heading', { name: 'Authentic Images Setup' } )
+	).toBeInTheDocument();
+	expect(
+		screen.getByText(
+			'Your long-term service license has expired. Add a new premium license key to continue.'
+		)
+	).toBeInTheDocument();
+} );
+
+test( 'renders the expired license message without an unavailable license name', () => {
+	// Arrange.
+	arrangeGlobals( { licenseStatus: 'expired' } );
+	arrangeValidation();
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect(
+		screen.getByText(
+			'Your license has expired. Add a new premium license key to continue.'
+		)
+	).toBeInTheDocument();
+} );
+
+test( 'renders the license key input', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect(
+		screen.getByLabelText( /Premium license key/i )
+	).toBeInTheDocument();
+} );
+
+test( 'renders the Activate site button', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect(
+		screen.getByRole( 'button', { name: /Activate site/i } )
+	).toBeInTheDocument();
+} );
+
+test( 'dismisses the welcome screen for the current device', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+	render( <WelcomePage /> );
+
+	// Act.
+	fireEvent.click( screen.getByRole( 'button', { name: 'Dismiss' } ) );
+
+	// Assert.
+	expect(
+		screen.getByRole( 'heading', { name: 'Setup dismissed' } )
+	).toBeInTheDocument();
+	const learnMoreLink = screen.getByRole( 'link', { name: 'Learn more' } );
+	expect( learnMoreLink.closest( 'p' ) ).toHaveTextContent(
+		'Complete setup any time from the setup link on the plugins screen. Learn more'
+	);
+	expect( learnMoreLink ).toHaveAttribute(
+		'href',
+		'https://authenticimages.zip/help/license-key'
+	);
+	expect( document.cookie ).toContain( 'AUTHENTICIMAGES_DISMISS_SETUP=1' );
+} );
+
+test( 'undoes dismissal for the current device', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+	render( <WelcomePage /> );
+
+	// Act.
+	fireEvent.click( screen.getByRole( 'button', { name: 'Dismiss' } ) );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Undo' } ) );
+
+	// Assert.
+	expect(
+		screen.getByRole( 'heading', { name: 'Welcome to Authentic Images' } )
+	).toBeInTheDocument();
+	expect( document.cookie ).not.toContain( 'AUTHENTICIMAGES_DISMISS_SETUP' );
+} );
+
+test( 'forwards license key changes to validation', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+	render( <WelcomePage /> );
+
+	// Act.
+	fireEvent.change( screen.getByLabelText( /Premium license key/i ), {
+		target: { value: 'ABCD-1234' },
+	} );
+
+	// Assert.
+	expect( mockHandleLicenseKeyChange ).toHaveBeenCalledWith(
+		'ABCD-1234',
+		false
+	);
+} );
+
+test( 'forces validation after a license key is pasted', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation();
+	render( <WelcomePage /> );
+
+	// Act.
+	const input = screen.getByLabelText( /Premium license key/i );
+	fireEvent.paste( input );
+	fireEvent.change( input, { target: { value: 'ABCD-1234' } } );
+
+	// Assert.
+	expect( mockHandleLicenseKeyChange ).toHaveBeenCalledWith(
+		'ABCD-1234',
+		true
+	);
+} );
+
+test.each< [ string, ValidationState, 'status' | 'alert' ] >( [
+	[ 'idle', { status: 'idle' }, 'status' ],
+	[ 'validating', { status: 'validating' }, 'status' ],
+	[ 'invalid', { status: 'invalid' }, 'alert' ],
+	[ 'expired', { status: 'expired', expiresAt: EXPIRES_AT }, 'alert' ],
+	[ 'error', { status: 'error' }, 'alert' ],
+	[ 'unavailable', { status: 'unavailable', total: 5 }, 'status' ],
+] )(
+	'renders the %s validation state with activation disabled',
+	( name, validationState, role ) => {
+		// Arrange.
+		arrangeGlobals();
+		arrangeValidation( { validationState } );
+
+		// Act.
+		render( <WelcomePage /> );
+
+		// Assert.
+		expect( screen.getByRole( role ) ).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		).toBeDisabled();
+	}
+);
+
+test( 'renders the available validation state with activation enabled', () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation( {
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+
+	// Act.
+	render( <WelcomePage /> );
+
+	// Assert.
+	expect( screen.getByRole( 'status' ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', { name: /Activate site/i } )
+	).toBeEnabled();
+} );
+
+test( 'shows success message after valid license key is saved', async () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation( {
+		licenseKey: 'ABCD-1234',
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+	mockApiFetch.mockResolvedValue( {
+		authenticimages_license_key: 'ABCD-1234',
+	} );
+
+	// Act.
+	render( <WelcomePage /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		);
+	} );
+
+	// Assert.
+	expect( screen.getByText( /Success!/i ) ).toBeInTheDocument();
+	expect( mockApiFetch ).toHaveBeenCalledWith( {
+		path: '/wp/v2/settings',
+		method: 'POST',
+		data: { authenticimages_license_key: 'ABCD-1234' },
+	} );
+} );
+
+test( 'shows error when REST API save fails', async () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation( {
+		licenseKey: 'ABCD-1234',
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+	mockApiFetch.mockRejectedValue( new Error( 'Forbidden' ) );
+
+	// Act.
+	render( <WelcomePage /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		);
+	} );
+
+	// Assert.
+	expect( screen.getByText( /Unable to apply/i ) ).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', { name: /Activate site/i } )
+	).toBeEnabled();
+} );
+
+test( 'shows activation error when the saved license key does not match', async () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation( {
+		licenseKey: 'ABCD-1234',
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+	mockApiFetch.mockResolvedValue( {
+		authenticimages_license_key: 'PREVIOUS-LICENSE-KEY',
+	} );
+
+	// Act.
+	render( <WelcomePage /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		);
+	} );
+
+	// Assert.
+	expect(
+		screen.getByText( 'Error activating site. Please try again' )
+	).toBeInTheDocument();
+	expect(
+		screen.getByRole( 'button', { name: /Activate site/i } )
+	).toBeEnabled();
+} );
+
+test( 'welcome mode success view shows Products link', async () => {
+	// Arrange.
+	arrangeGlobals();
+	arrangeValidation( {
+		licenseKey: 'ABCD-1234',
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+	mockApiFetch.mockResolvedValue( {
+		authenticimages_license_key: 'ABCD-1234',
+	} );
+
+	// Act.
+	render( <WelcomePage /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		);
+	} );
+
+	// Assert.
+	const productsLink = screen.getByRole( 'link', { name: /Get Started/i } );
+	expect( productsLink ).toHaveAttribute(
+		'href',
+		'/wp-admin/edit.php?post_type=product'
+	);
+} );
+
+test( 'reset mode success view omits getting started guidance', async () => {
+	// Arrange.
+	arrangeGlobals( { licenseStatus: 'not_found' } );
+	arrangeValidation( {
+		licenseKey: 'NEW-LICENSE-KEY',
+		validationState: { status: 'available', remaining: 3, total: 5 },
+		canActivate: true,
+	} );
+	mockApiFetch.mockResolvedValue( {
+		authenticimages_license_key: 'NEW-LICENSE-KEY',
+	} );
+
+	// Act.
+	render( <WelcomePage /> );
+	await act( async () => {
+		fireEvent.click(
+			screen.getByRole( 'button', { name: /Activate site/i } )
+		);
+	} );
+
+	// Assert.
+	expect(
+		screen.getByRole( 'heading', { name: 'License activated' } )
+	).toBeInTheDocument();
+	const learnMoreLink = screen.getByRole( 'link', { name: 'Learn more' } );
+	expect( learnMoreLink ).toHaveAttribute(
+		'href',
+		'https://authenticimages.zip/help/license'
+	);
+	const description = learnMoreLink.closest( 'p' );
+	expect( description ).toHaveTextContent(
+		'License activated. Your premium license includes plugin updates and email support. Learn more'
+	);
+	expect(
+		screen.queryByRole( 'link', { name: /Get Started/i } )
+	).not.toBeInTheDocument();
+} );

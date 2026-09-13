@@ -1,0 +1,195 @@
+/**
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+import { buildPreviewStyles } from '../index';
+
+describe( 'buildPreviewStyles', () => {
+	const vars = {
+		bgColor: '--authenticimages-badge-bg-color',
+		textColor: '--authenticimages-badge-text-color',
+		fontWeight: '--authenticimages-badge-font-weight',
+		borderColor: '--authenticimages-badge-border-color',
+		borderStyle: '--authenticimages-badge-border-style',
+		borderWidth: '--authenticimages-badge-border-width',
+		borderRadius: '--authenticimages-badge-border-radius',
+		scale: '--authenticimages-badge-scale',
+		density: '--authenticimages-badge-density',
+	};
+
+	test( 'wraps declarations in a :root rule', () => {
+		const result = buildPreviewStyles( {} );
+
+		expect( result ).toMatch( /^:root \{ .+ \}$/ );
+	} );
+
+	test( 'serializes label as a JSON string', () => {
+		const result = buildPreviewStyles( { label: 'Authentic' } );
+
+		expect( result ).toContain(
+			'--authenticimages-badge-label: "Authentic"'
+		);
+	} );
+
+	test( 'escapes special characters in label', () => {
+		const resultQuote = buildPreviewStyles( {
+			label: 'Bob"s original photography',
+		} );
+		const resultNewline = buildPreviewStyles( {
+			label: 'A "quote"\nand newline',
+		} );
+
+		expect( resultQuote ).toContain(
+			'--authenticimages-badge-label: "Bob\\"s original photography"'
+		);
+		expect( resultNewline ).toContain(
+			'--authenticimages-badge-label: "A \\"quote\\"\\nand newline"'
+		);
+	} );
+
+	test( 'uses none for label when undefined', () => {
+		const result = buildPreviewStyles( {} );
+
+		expect( result ).toContain( '--authenticimages-badge-label: none' );
+	} );
+
+	test( 'uses none for label when empty string', () => {
+		const result = buildPreviewStyles( { label: '' } );
+
+		expect( result ).toContain( '--authenticimages-badge-label: none' );
+	} );
+
+	test.each( [
+		[ 'bgColor', '#ff0000' ],
+		[ 'textColor', '#ffffff' ],
+		[ 'fontWeight', '700' ],
+		[ 'borderColor', '#cccccc' ],
+		[ 'borderStyle', 'solid' ],
+		[ 'borderWidth', '1px' ],
+		[ 'borderRadius', '4px' ],
+		[ 'scale', 120 ],
+		[ 'density', 60 ],
+	] as const )( 'includes %s CSS var', ( key, value ) => {
+		const result = buildPreviewStyles( { [ key ]: value } );
+
+		expect( result ).toContain( `${ vars[ key ] }: ${ value }` );
+	} );
+
+	test( 'includes all CSS vars when all settings are provided', () => {
+		const result = buildPreviewStyles( {
+			label: 'Authentic',
+			bgColor: '#ff0000',
+			textColor: '#ffffff',
+			fontWeight: '700',
+			borderColor: '#cccccc',
+			borderStyle: 'solid',
+			borderWidth: '1px',
+			borderRadius: '4px',
+			scale: 120,
+			density: 60,
+		} );
+
+		expect( result ).toContain(
+			'--authenticimages-badge-label: "Authentic"'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-bg-color: #ff0000'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-text-color: #ffffff'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-font-weight: 700'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-border-color: #cccccc'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-border-style: solid'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-border-width: 1px'
+		);
+		expect( result ).toContain(
+			'--authenticimages-badge-border-radius: 4px'
+		);
+		expect( result ).toContain( '--authenticimages-badge-scale: 120' );
+		expect( result ).toContain( '--authenticimages-badge-density: 60' );
+	} );
+
+	test.each(
+		Object.entries( vars ) as Array< [ keyof typeof vars, string ] >
+	)( 'outputs unset for undefined %s', ( key, cssVar ) => {
+		const result = buildPreviewStyles( { [ key ]: undefined } );
+
+		expect( result ).toContain( `${ cssVar }: unset` );
+	} );
+
+	test( 'outputs unset for empty or undefined CSS values', () => {
+		const result = buildPreviewStyles( {
+			bgColor: '',
+			borderWidth: '0',
+			borderRadius: '0',
+			scale: undefined,
+			density: undefined,
+		} );
+
+		expect( result ).toContain( '--authenticimages-badge-bg-color: unset' );
+		expect( result ).toContain( '--authenticimages-badge-border-width: 0' );
+		expect( result ).toContain(
+			'--authenticimages-badge-border-radius: 0'
+		);
+		expect( result ).toContain( '--authenticimages-badge-scale: unset' );
+		expect( result ).toContain( '--authenticimages-badge-density: unset' );
+	} );
+
+	test( 'outputs unset for undefined or empty alongside defined values', () => {
+		const result = buildPreviewStyles( {
+			bgColor: '#000',
+			textColor: undefined,
+		} );
+
+		expect( result ).toContain( '--authenticimages-badge-bg-color: #000' );
+		expect( result ).toContain(
+			'--authenticimages-badge-text-color: unset'
+		);
+	} );
+
+	test( 'outputs 0 for zero scale', () => {
+		const result = buildPreviewStyles( {
+			scale: 0,
+		} );
+
+		expect( result ).toContain( '--authenticimages-badge-scale: 0' );
+	} );
+
+	test( 'outputs 0 for zero density', () => {
+		const result = buildPreviewStyles( {
+			density: 0,
+		} );
+
+		expect( result ).toContain( '--authenticimages-badge-density: 0' );
+	} );
+
+	test( 'joins declarations with semicolons', () => {
+		const result = buildPreviewStyles( {
+			label: 'Authentic',
+			bgColor: '#ff0000',
+		} );
+
+		expect( result ).toContain(
+			'--authenticimages-badge-label: "Authentic";'
+		);
+
+		expect( result ).toContain(
+			'--authenticimages-badge-bg-color: #ff0000;'
+		);
+	} );
+
+	test( 'does not append a trailing semicolon before the closing brace', () => {
+		const result = buildPreviewStyles( {} );
+
+		expect( result ).not.toMatch( /;\s+\}$/ );
+	} );
+} );

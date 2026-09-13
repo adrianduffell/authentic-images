@@ -1,0 +1,116 @@
+<?php
+/**
+ * Plugin update functions.
+ *
+ * @package AuthenticImages
+ * @subpackage Updates
+ * @copyright 2026 Adrian Duffell
+ * @license GNU General Public License v2.0 or later
+ */
+
+namespace AuthenticImages;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Helper to initialize license features.
+ *
+ * @internal
+ */
+function init_update_plugin(): void {
+	add_filter( 'update_plugins_adrianduffell.store', 'AuthenticImages\update_plugin_hook', 10, 2 );
+}
+
+/**
+ * Helper to de-initialize  plugin updates.
+ *
+ * @internal
+ */
+function deinit_update_plugin(): void {
+	remove_filter( 'update_plugins_adrianduffell.store', 'AuthenticImages\update_plugin_hook', 10, 2 );
+}
+
+
+
+/**
+ * Checks for an available Authentic Images update.
+ *
+ * Fired by `update_plugins_adrianduffell.store`.
+ *
+ * @param array<string, mixed>|false $update Existing update information.
+ * @param array<string, mixed>       $plugin_data Plugin header data.
+ * @internal WordPress filter hook
+ * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+ * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint
+ */
+function update_plugin_hook( $update, array $plugin_data ) {
+	if ( 'https://adrianduffell.store/authenticimages' !== $plugin_data['UpdateURI'] ) {
+		return $update;
+	}
+
+	$license_status = get_license_status();
+
+	if ( 'error' === $license_status ) {
+		\wc_get_logger()->error( 'Could not check for plugin update due to error checking premium license' );
+		return $update;
+	}
+
+	if ( 'active' !== $license_status ) {
+		return false;
+	}
+
+	try {
+		$license_activation = get_license_activation();
+	} catch ( \UnexpectedValueException $e ) {
+		\wc_get_logger()->error( 'Could not retrieve license activation for plugin update.' );
+		return false;
+	}
+
+	if ( is_null( $license_activation ) ) {
+		return false;
+	}
+
+	$response = wp_remote_get(
+		add_query_arg(
+			'version',
+			VERSION,
+			'https://api.adrianduffell.store/v1/authenticimages/updates'
+		),
+		array(
+			'timeout' => 5,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . implode( '.', $license_activation ),
+				'Accept'        => 'application/json',
+			),
+		)
+	);
+
+	if (
+		is_wp_error( $response )
+		|| 200 !== wp_remote_retrieve_response_code( $response )
+	) {
+		\wc_get_logger()->error( 'Could not connect to update server.' );
+		return $update;
+	}
+
+	$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+	if (
+		! is_array( $data )
+		|| ! isset( $data['version'], $data['url'], $data['package'] )
+	) {
+		\wc_get_logger()->error( 'Invalid response from update server.' );
+		return $update;
+	}
+
+	return array(
+		'name'         => 'Authentic Images',
+		'slug'         => 'authenticimages',
+		'version'      => $data['version'],
+		'url'          => $data['url'],
+		'icons'        => $data['icons'] ?? array(),
+		'package'      => $data['package'] ?? '',
+		'tested'       => $data['tested'] ?? '',
+		'requires_php' => $data['requires_php'] ?? '',
+	);
+}
