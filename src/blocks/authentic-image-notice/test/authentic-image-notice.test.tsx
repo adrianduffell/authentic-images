@@ -5,7 +5,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
-import { Edit, TEMPLATE } from '../edit';
+import { Edit } from '../edit';
 import { Save } from '../save';
 import metadata from '../block.json';
 
@@ -86,11 +86,12 @@ describe( 'Edit', () => {
 		expect(
 			screen.getByTestId( 'authentic-image-notice-editor' )
 		).toBeVisible();
-		expect( mockUseInnerBlocksProps ).toHaveBeenCalledWith(
-			expect.any( Object ),
-			{ template: TEMPLATE }
-		);
+		expect( mockUseInnerBlocksProps ).toHaveBeenCalledTimes( 1 );
 		const settings = mockUseInnerBlocksProps.mock.calls[ 0 ][ 1 ];
+		expect( settings.template ).toEqual( [
+			[ 'authenticimages/authentic-badge', {} ],
+			[ 'authenticimages/authentic-message', {} ],
+		] );
 		expect( settings ).not.toHaveProperty( 'templateLock' );
 	} );
 } );
@@ -108,8 +109,6 @@ describe( 'Save', () => {
 		expect(
 			screen.getByTestId( 'authentic-image-notice-save' )
 		).toBeVisible();
-		expect( mockUseInnerBlocksProps.save ).toHaveBeenCalledWith(
-			expect.any( Object )
-		);
+		expect( mockUseInnerBlocksProps.save ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
