@@ -14,18 +14,15 @@ const productGallery = process.env.PRODUCT_GALLERY;
  * @return {Promise<Object>} Single Product template.
  */
 async function getSingleProductTemplate( requestUtils ) {
-	const templates = await requestUtils.rest( {
+	const template = await requestUtils.rest( {
 		method: 'GET',
-		path: '/wp/v2/templates',
+		path: '/wp/v2/templates/lookup',
 		params: {
-			context: 'edit',
+			slug: 'single-product',
 		},
 	} );
-	const template = templates.find(
-		( candidate ) => candidate.slug === 'single-product'
-	);
 
-	expect( template ).toBeDefined();
+	expect( template.slug ).toBe( 'single-product' );
 
 	return template;
 }
