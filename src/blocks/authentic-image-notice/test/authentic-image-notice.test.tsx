@@ -12,11 +12,11 @@ import metadata from '../block.json';
 jest.mock( '@wordpress/block-editor', () => {
 	const mockUseBlockProps = Object.assign(
 		jest.fn( () => ( {
-			'data-testid': 'authentic-images-editor',
+			'data-testid': 'authentic-image-notice-editor',
 		} ) ),
 		{
 			save: jest.fn( () => ( {
-				'data-testid': 'authentic-images-save',
+				'data-testid': 'authentic-image-notice-save',
 			} ) ),
 		}
 	);
@@ -47,7 +47,7 @@ describe( 'Metadata', () => {
 		expect( blockGap ).toBe( '0.33em' );
 	} );
 
-	test( 'uses the disclosure block name', () => {
+	test( 'uses the notice block name', () => {
 		// Arrange.
 		const { name } = metadata;
 
@@ -55,12 +55,10 @@ describe( 'Metadata', () => {
 		const blockName = name;
 
 		// Assert.
-		expect( blockName ).toBe(
-			'authenticimages/authentic-image-disclosure'
-		);
+		expect( blockName ).toBe( 'authenticimages/authentic-image-notice' );
 	} );
 
-	test( 'uses the disclosure title in the editor', () => {
+	test( 'uses the notice title in the editor', () => {
 		// Arrange.
 		const { title } = metadata;
 
@@ -68,7 +66,7 @@ describe( 'Metadata', () => {
 		const blockTitle = title;
 
 		// Assert.
-		expect( blockTitle ).toBe( 'Authentic Image Disclosure' );
+		expect( blockTitle ).toBe( 'Authentic Image Notice' );
 	} );
 } );
 
@@ -82,7 +80,9 @@ describe( 'Edit', () => {
 		render( <Edit /> );
 
 		// Assert.
-		expect( screen.getByTestId( 'authentic-images-editor' ) ).toBeVisible();
+		expect(
+			screen.getByTestId( 'authentic-image-notice-editor' )
+		).toBeVisible();
 		expect( mockUseInnerBlocksProps ).toHaveBeenCalledWith(
 			expect.any( Object ),
 			{ template: TEMPLATE }
@@ -102,7 +102,9 @@ describe( 'Save', () => {
 		render( <Save /> );
 
 		// Assert.
-		expect( screen.getByTestId( 'authentic-images-save' ) ).toBeVisible();
+		expect(
+			screen.getByTestId( 'authentic-image-notice-save' )
+		).toBeVisible();
 		expect( mockUseInnerBlocksProps.save ).toHaveBeenCalledWith(
 			expect.any( Object )
 		);

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
  * @internal
  */
 function init_blocks(): void {
-	register_authentic_image_disclosure_block();
+	register_authentic_image_notice_block();
 	register_authentic_badge_block();
 	register_authentic_message_block();
 	add_filter( 'hooked_block_types', 'AuthenticImages\auto_insert_authentic_badge_hook', 10, 4 );
@@ -43,12 +43,12 @@ function deinit_blocks(): void {
 }
 
 /**
- * Register the Authentic Image Disclosure block type.
+ * Register the Authentic Image Notice block type.
  *
  * @internal
  */
-function register_authentic_image_disclosure_block(): void {
-	register_block_type( plugin_dir_path( __DIR__ ) . 'build/blocks/authentic-image-disclosure/' );
+function register_authentic_image_notice_block(): void {
+	register_block_type( plugin_dir_path( __DIR__ ) . 'build/blocks/authentic-image-notice/' );
 }
 
 /**

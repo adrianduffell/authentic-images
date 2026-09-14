@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "authenticimages/authentic-image-disclosure",
-	"title": "Authentic Image Disclosure",
+	"name": "authenticimages/authentic-image-notice",
+	"title": "Authentic Image Notice",
 	"category": "woocommerce",
 	"description": "Displays product image authenticity with a badge and message.",
 	"attributes": {

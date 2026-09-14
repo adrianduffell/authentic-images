@@ -82,7 +82,7 @@ Applied to the message element. Used by both the block renderer and classic them
 
 ## Blocks
 
-### `authenticimages/authentic-image-disclosure`
+### `authenticimages/authentic-image-notice`
 
 Container to group the badge and message. The default layout is horizontal with a `0.33em` block gap, and the badge and message appearing side-by-side. Added in 1.0.0.
 
