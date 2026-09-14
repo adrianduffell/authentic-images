@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "authenticimages/authentic-image-notice",
+	"title": "Authentic Image Notice",
+	"category": "woocommerce",
+	"description": "Displays product image authenticity with a badge and message.",
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"layout": {
+			"allowEditing": true,
+			"allowInheriting": false,
+			"allowJustification": true,
+			"allowOrientation": true,
+			"allowSizingOnChildren": true,
+			"allowSwitching": true,
+			"allowVerticalAlignment": true,
+			"default": {
+				"type": "flex",
+				"flexWrap": "nowrap",
+				"justifyContent": "left",
+				"verticalAlignment": "top"
+			}
+		},
+		"spacing": {
+			"blockGap": true,
+			"margin": true,
+			"padding": true
+		}
+	},
+	"variations": [
+		{
+			"name": "default",
+			"title": "Authentic Image Notice",
+			"attributes": {
+				"style": {
+					"spacing": {
+						"blockGap": "0.33em"
+					}
+				}
+			},
+			"isDefault": true,
+			"scope": [ "inserter" ]
+		}
+	],
+	"textdomain": "authenticimages"
+}
