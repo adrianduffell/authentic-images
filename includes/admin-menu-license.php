@@ -66,11 +66,11 @@ function deinit_admin_menu(): void {
 function add_welcome_menu_hook(): void {
 	add_menu_page(
 		__( 'Welcome to Authentic Images', 'authenticimages' ),
-		__( 'Authentic Images Setup', 'authenticimages' ),
+		__( 'Authentic Images', 'authenticimages' ),
 		'manage_options',
 		WELCOME_PAGE_SLUG,
 		'AuthenticImages\render_welcome_page',
-		'dashicons-admin-generic',
+		'dashicons-bell',
 		0
 	);
 }
