@@ -182,6 +182,9 @@ jobs:
     - name: Run classic theme shortcode E2E tests
       run: THEME=storefront STORE_PAGES=shortcode npm run test:e2e -- tests/e2e/0-bootstrap-theme.spec.js tests/e2e/0-bootstrap-store-pages.spec.js tests/e2e/shopping.spec.js
 
+    - name: Run new product gallery block E2E tests
+      run: THEME=twentytwentyfive STORE_PAGES=block PRODUCT_GALLERY=new npm run test:e2e -- tests/e2e/0-bootstrap-theme.spec.js tests/e2e/0-bootstrap-store-pages.spec.js tests/e2e/1-bootstrap-product-gallery.spec.js tests/e2e/shopping.spec.js
+
     - name: Upload Playwright artifacts
       if: always()
       uses: actions/upload-artifact@v6
