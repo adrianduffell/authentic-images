@@ -27,7 +27,7 @@ test(
 
 		// Assert.
 		await expect(
-			page.getByRole( 'link', { name: 'Authentic Images Setup' } )
+			page.getByRole( 'link', { name: 'Authentic Images' } )
 		).toBeVisible();
 	}
 );
@@ -105,7 +105,7 @@ test(
 
 		// Assert.
 		await expect(
-			page.getByRole( 'link', { name: 'Authentic Images Setup' } )
+			page.getByRole( 'link', { name: 'Authentic Images' } )
 		).toHaveCount( 0 );
 	}
 );
@@ -165,7 +165,7 @@ test(
 
 		// Assert.
 		await expect(
-			page.getByRole( 'link', { name: 'Authentic Images Setup' } )
+			page.getByRole( 'link', { name: 'Authentic Images' } )
 		).toHaveCount( 0 );
 	}
 );
