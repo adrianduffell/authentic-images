@@ -5,16 +5,6 @@
 	"title": "Authentic Image Notice",
 	"category": "woocommerce",
 	"description": "Displays product image authenticity with a badge and message.",
-	"attributes": {
-		"style": {
-			"type": "object",
-			"default": {
-				"spacing": {
-					"blockGap": "0.33em"
-				}
-			}
-		}
-	},
 	"supports": {
 		"html": false,
 		"align": [ "wide", "full" ],
@@ -39,5 +29,20 @@
 			"padding": true
 		}
 	},
+	"variations": [
+		{
+			"name": "default",
+			"title": "Authentic Image Notice",
+			"attributes": {
+				"style": {
+					"spacing": {
+						"blockGap": "0.33em"
+					}
+				}
+			},
+			"isDefault": true,
+			"scope": [ "inserter" ]
+		}
+	],
 	"textdomain": "authenticimages"
 }

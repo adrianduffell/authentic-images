@@ -36,14 +36,17 @@ const mockUseBlockProps = jest.mocked( useBlockProps );
 const mockUseInnerBlocksProps = jest.mocked( useInnerBlocksProps );
 
 describe( 'Metadata', () => {
-	test( 'defaults to a compact relative block gap', () => {
+	test( 'inserts with a compact relative block gap', () => {
 		// Arrange.
-		const { style } = metadata.attributes;
+		const [ defaultVariation ] = metadata.variations;
 
 		// Act.
-		const { blockGap } = style.default.spacing;
+		const { blockGap } = defaultVariation.attributes.style.spacing;
 
 		// Assert.
+		expect( defaultVariation.name ).toBe( 'default' );
+		expect( defaultVariation.isDefault ).toBe( true );
+		expect( defaultVariation.scope ).toEqual( [ 'inserter' ] );
 		expect( blockGap ).toBe( '0.33em' );
 	} );
 
