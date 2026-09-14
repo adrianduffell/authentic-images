@@ -60,7 +60,7 @@ Admin stylesheet enqueued on all `admin_enqueue_scripts` pages. Added in 1.0.0.
 
 #### `authenticimages-editor`
 
-Block editor JavaScript enqueued on `enqueue_block_editor_assets`. Contains the block editor integration for the badge and message blocks. Added in 1.0.0.
+Block editor JavaScript enqueued on `enqueue_block_editor_assets`. Contains the block editor integration for the notice, badge, and message blocks. Added in 1.0.0.
 
 #### `authenticimages-admin-canvas-scripts`
 
