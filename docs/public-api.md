@@ -82,6 +82,10 @@ Applied to the message element. Used by both the block renderer and classic them
 
 ## Blocks
 
+### `authenticimages/authentic-image-disclosure`
+
+Container to group the badge and message. The default layout is horizontal with a `0.33em` block gap, and the badge and message appearing side-by-side. Added in 1.0.0.
+
 ### `authenticimages/authentic-badge`
 
 Displays the badge on product pages. Automatically inserted after the product price on the single product template (block themes). Added in 1.0.0.

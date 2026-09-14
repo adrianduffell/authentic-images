@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "authenticimages/authentic-image-disclosure",
+	"title": "Authentic Image Disclosure",
+	"category": "woocommerce",
+	"description": "Displays product image authenticity with a badge and message.",
+	"attributes": {
+		"style": {
+			"type": "object",
+			"default": {
+				"spacing": {
+					"blockGap": "0.33em"
+				}
+			}
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"layout": {
+			"allowEditing": true,
+			"allowInheriting": false,
+			"allowJustification": true,
+			"allowOrientation": true,
+			"allowSizingOnChildren": true,
+			"allowSwitching": true,
+			"allowVerticalAlignment": true,
+			"default": {
+				"type": "flex",
+				"flexWrap": "nowrap",
+				"justifyContent": "left",
+				"verticalAlignment": "top"
+			}
+		},
+		"spacing": {
+			"blockGap": true,
+			"margin": true,
+			"padding": true
+		}
+	},
+	"textdomain": "authenticimages"
+}
