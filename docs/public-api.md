@@ -88,7 +88,7 @@ Container to group the badge and message. The default layout is horizontal with 
 
 ### `authenticimages/authentic-badge`
 
-Displays the badge on product pages. Automatically inserted after the product price on the single product template (block themes). Added in 1.0.0.
+Displays the badge within the notice parent block on product pages. Added in 1.0.0.
 
 Styles are inherited from site-wide settings. Default style values:
 
@@ -116,7 +116,7 @@ Use the scale setting to control the height of the badge, and density (called "f
 
 ### `authenticimages/authentic-message`
 
-Displays the message on product pages. Automatically inserted as the first child of the product meta block on the single product template (block themes). Added in 1.0.0.
+Displays the message within the notice parent block on product pages. Added in 1.0.0.
 
 | Attribute  | Type     | Default | Description                                |
 | ---------- | -------- | ------- | ------------------------------------------ |
