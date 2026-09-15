@@ -52,11 +52,19 @@ Front-end badge stylesheet for classic (non-block) themes. Registered—but not 
 
 Front-end message stylesheet for classic (non-block) themes. Registered—but not automatically enqueued—on `wp_enqueue_scripts`. Use `wp_enqueue_style( 'authenticimages-classic-message' )` or declare it as a dependency to load it on demand. Added in 1.0.0.
 
+#### `authenticimages-classic-notice`
+
+Front-end notice stylesheet for classic (non-block) themes. Registered on `wp_enqueue_scripts` and automatically enqueued when the notice is rendered. Added in 1.0.0.
+
 #### `authenticimages-admin`
 
 Admin stylesheet enqueued on all `admin_enqueue_scripts` pages. Added in 1.0.0.
 
 ### Scripts
+
+#### `authenticimages-classic-notice`
+
+Scripts for the notice on classic themes. Contains integration with WooCommerce gallery. Added in 1.0.0.
 
 #### `authenticimages-editor`
 
@@ -71,6 +79,10 @@ Admin JavaScript enqueued on `enqueue_block_assets` in wp-admin for editor canva
 These classes are part of the public API and stable across versions. They can be targeted for custom styling.
 
 ### Front-end classes
+
+#### `.authenticimages-notice`
+
+Applied to the notice element. Used by both the block renderer and classic theme template hooks. Added in 1.0.0.
 
 #### `.authenticimages-badge`
 

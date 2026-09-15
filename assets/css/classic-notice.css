@@ -1,0 +1,16 @@
+/**
+ * Front-end notice styles for classic themes.
+ *
+ * Copyright 2026 Adrian Duffell
+ * Licensed under the GNU General Public License v2.0 or later.
+ */
+
+.authenticimages-notice {
+	display: flex;
+	align-items: center;
+	gap: 0.33em;
+}
+
+.woocommerce-product-gallery__wrapper + .authenticimages-notice {
+	margin-top: 1em;
+}

@@ -35,4 +35,16 @@ class Test_Register_Classic_Styles_Hook extends WP_UnitTestCase {
 		// Assert.
 		$this->assertTrue( wp_style_is( 'authenticimages-classic-message', 'registered' ) );
 	}
+
+	public function test_registers_classic_notice_style(): void {
+		// Arrange.
+		deinit_enqueue();
+		enqueue_init();
+
+		// Act.
+		do_action( 'wp_enqueue_scripts' );
+
+		// Assert.
+		$this->assertTrue( wp_style_is( 'authenticimages-classic-notice', 'registered' ) );
+	}
 }
