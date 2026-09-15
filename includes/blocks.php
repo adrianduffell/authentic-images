@@ -22,8 +22,6 @@ function init_blocks(): void {
 	register_authentic_image_notice_block();
 	register_authentic_badge_block();
 	register_authentic_message_block();
-	add_filter( 'hooked_block_types', 'AuthenticImages\auto_insert_authentic_badge_hook', 10, 4 );
-	add_filter( 'hooked_block_types', 'AuthenticImages\auto_insert_authentic_message_hook', 10, 4 );
 	add_filter( 'hooked_block_types', 'AuthenticImages\auto_insert_notice_hook', 10, 4 );
 	add_filter( 'hooked_block_authenticimages/authentic-image-notice', 'AuthenticImages\seed_auto_inserted_notice_hook', 10, 5 );
 }
@@ -67,54 +65,6 @@ function register_authentic_badge_block(): void {
 			'render_callback' => 'AuthenticImages\render_authentic_badge_callback',
 		)
 	);
-}
-
-/**
- * Auto-insert the authentic badge block after the product price on the single product template.
- *
- * @internal WordPress filter hook
- * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint
- * @param string[]                      $hooked_blocks     Block names hooked to the anchor at this position.
- * @param string                        $relative_position Position relative to the anchor block.
- * @param string                        $anchor_block      Anchor block name.
- * @param \WP_Block_Template|array|null $context Block template or post context, or null.
- * @return string[] Filtered hooked block names.
- */
-function auto_insert_authentic_badge_hook( $hooked_blocks, $relative_position, $anchor_block, $context ): array {
-	if ( 'woocommerce/product-price' !== $anchor_block || 'after' !== $relative_position ) {
-		return $hooked_blocks;
-	}
-
-	// Only auto-insert the badge on the single product template.
-	if ( $context instanceof \WP_Block_Template && 'single-product' === $context->slug ) {
-		$hooked_blocks[] = 'authenticimages/authentic-badge';
-	}
-
-	return $hooked_blocks;
-}
-
-/**
- * Auto-insert the authentic message block as the first child of the product meta block on the single product template.
- *
- * @internal WordPress filter hook
- * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint
- * @param string[]                      $hooked_blocks     Block names hooked to the anchor at this position.
- * @param string                        $relative_position Position relative to the anchor block.
- * @param string                        $anchor_block      Anchor block name.
- * @param \WP_Block_Template|array|null $context Block template or post context, or null.
- * @return string[] Filtered hooked block names.
- */
-function auto_insert_authentic_message_hook( $hooked_blocks, $relative_position, $anchor_block, $context ): array {
-	if ( 'woocommerce/product-meta' !== $anchor_block || 'first_child' !== $relative_position ) {
-		return $hooked_blocks;
-	}
-
-	// Only auto-insert the message on the single product template.
-	if ( $context instanceof \WP_Block_Template && 'single-product' === $context->slug ) {
-		$hooked_blocks[] = 'authenticimages/authentic-message';
-	}
-
-	return $hooked_blocks;
 }
 
 /**
