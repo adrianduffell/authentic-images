@@ -1,0 +1,12 @@
+@supports selector(:has(*)) {
+
+	.wp-block-woocommerce-product-image-gallery:has(+ .authenticimages-notice) .woocommerce-product-gallery {
+
+		/*
+		 * Remove the gallery’s hardcoded bottom margin when the notice is the
+		 * next sibling. This allows the notice block’s configured margins
+		 * to provide the spacing between the elements.
+		 */
+		margin-bottom: 0 !important;
+	}
+}
