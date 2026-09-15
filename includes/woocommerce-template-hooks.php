@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || exit;
  * Helper to initialize classic theme frontend integrations.
  *
  * @internal
- * @throws \InvalidArgumentException When a filter returns an invalid value.
  */
 function init_woocommerce_template_hooks(): void {
 	add_action( 'woocommerce_after_template_part', 'AuthenticImages\display_authentic_image_notice_hook', 10, 1 );
