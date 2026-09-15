@@ -8,34 +8,43 @@
  */
 
 use function AuthenticImages\deinit_blocks;
+use function AuthenticImages\init_blocks;
 
 class Test_Deinit_Blocks extends WP_UnitTestCase {
 
-	public function test_block_is_unregistered_after_deinit_blocks(): void {
+	public function test_unregisters_authentic_image_notice_block(): void {
 		// Arrange.
-		register_block_type(
-			'authenticimages/foo',
-			array(
-				'render_callback' => '__return_empty_string',
-			)
-		);
-		$this->assertTrue( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/foo' ) );
+		deinit_blocks();
+		init_blocks();
 
 		// Act.
 		deinit_blocks();
 
 		// Assert.
-		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/foo' ) );
+		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-image-notice' ) );
 	}
 
-	public function test_safely_handles_block_not_registered(): void {
+	public function test_unregisters_authentic_badge_block(): void {
 		// Arrange.
-		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/bar' ) );
+		deinit_blocks();
+		init_blocks();
 
 		// Act.
 		deinit_blocks();
 
 		// Assert.
-		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/bar' ) );
+		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-badge' ) );
+	}
+
+	public function test_unregisters_authentic_message_block(): void {
+		// Arrange.
+		deinit_blocks();
+		init_blocks();
+
+		// Act.
+		deinit_blocks();
+
+		// Assert.
+		$this->assertFalse( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-message' ) );
 	}
 }

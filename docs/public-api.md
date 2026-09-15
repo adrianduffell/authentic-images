@@ -32,7 +32,7 @@ Scripts for the notice on classic themes. Contains integration with WooCommerce 
 
 #### `authenticimages-editor`
 
-Block editor JavaScript enqueued on `enqueue_block_editor_assets`. Contains the block editor integration for the notice, badge, and message blocks. Added in 1.0.0.
+Block editor JavaScript enqueued on `enqueue_block_editor_assets`. Contains Gutenberg and modern admin integrations. Added in 1.0.0.
 
 #### `authenticimages-admin-canvas-scripts`
 

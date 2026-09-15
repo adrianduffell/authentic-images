@@ -44,5 +44,7 @@
 			"scope": [ "inserter" ]
 		}
 	],
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
 	"textdomain": "authenticimages"
 }

@@ -6,6 +6,15 @@ The idea is to provide a badge and message for stores to promote that their prod
 
 The goal of this prototype is to pivot from Outlet Pro to Authentic Images, step-by-step.
 
+## Project structure
+
+### src/
+
+Contains the block and Gutenberg integrations.
+
+* Blocks are built individually using `block.json` autodiscovery, with their assets enqueued automatically.
+* Gutenberg integrations are built separately from `src/index.ts` and enqueued on `enqueue_block_editor_assets`.
+
 ## Code style
 
 * Use functions instead of classes, and as much as possible, pure functions with no side effects.
