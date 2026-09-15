@@ -11,7 +11,9 @@ export const TEMPLATE = [
 ];
 
 export function Edit(): JSX.Element {
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps( {
+		className: 'authenticimages-notice',
+	} );
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: TEMPLATE,
 	} );

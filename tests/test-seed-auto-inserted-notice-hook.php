@@ -27,6 +27,7 @@ class Test_Seed_Auto_Inserted_Notice_Hook extends WP_UnitTestCase {
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-image-notice' ) );
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-badge' ) );
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-message' ) );
+		$this->assertSame( 1, substr_count( $rendered_content, 'authenticimages-notice' ) );
 	}
 
 	public function test_product_gallery_notice_is_inserted_once_with_its_children(): void {
@@ -44,6 +45,7 @@ class Test_Seed_Auto_Inserted_Notice_Hook extends WP_UnitTestCase {
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-image-notice' ) );
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-badge' ) );
 		$this->assertSame( 1, substr_count( $rendered_content, '<!-- wp:authenticimages/authentic-message' ) );
+		$this->assertSame( 1, substr_count( $rendered_content, 'authenticimages-notice' ) );
 		$this->assertStringNotContainsString( '"margin"', $rendered_content );
 	}
 

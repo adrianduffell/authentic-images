@@ -172,7 +172,7 @@ function seed_auto_inserted_notice_hook( $parsed_hooked_block, $hooked_block_typ
 	);
 	$parsed_hooked_block['innerHTML']    = '';
 	$parsed_hooked_block['innerContent'] = array(
-		'<div class="wp-block-authenticimages-authentic-image-notice">',
+		'<div class="wp-block-authenticimages-authentic-image-notice authenticimages-notice">',
 		null,
 		null,
 		'</div>',
