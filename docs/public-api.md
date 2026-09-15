@@ -20,7 +20,7 @@ Front-end message stylesheet for classic (non-block) themes. Registered—but no
 
 #### `authenticimages-classic-notice`
 
-Front-end notice stylesheet for classic (non-block) themes. Registered—but not automatically enqueued—on `wp_enqueue_scripts`. Use `wp_enqueue_style( 'authenticimages-classic-notice' )` or declare it as a dependency to load it on demand. Added in 1.0.0.
+Front-end notice stylesheet for classic (non-block) themes. Registered on `wp_enqueue_scripts` and automatically enqueued when the notice is rendered. Added in 1.0.0.
 
 #### `authenticimages-admin`
 
