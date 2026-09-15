@@ -6,5 +6,8 @@
  */
 
 .authenticimages-message {
-	font-weight: 700;
+
+	/*
+	 * Inherit styles from container.
+	 */
 }

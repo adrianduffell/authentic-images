@@ -53,6 +53,7 @@ function init_woocommerce_template_hooks(): void {
 
 	add_action( $single_product_badge_hook, 'AuthenticImages\display_authentic_badge_hook', $single_product_badge_priority );
 	add_action( 'woocommerce_product_meta_start', 'AuthenticImages\display_authentic_message_hook', 1 );
+	add_action( 'woocommerce_after_template_part', 'AuthenticImages\display_authentic_image_notice_hook', 10, 1 );
 }
 
 /**
@@ -106,4 +107,57 @@ function display_authentic_message_hook(): void {
 	wp_enqueue_style( 'authenticimages-classic-message' );
 
 	echo '<p class="authenticimages-message">' . esc_html( $message ) . '</p>';
+}
+
+/**
+ * Display the authentic image notice after the classic product image gallery template.
+ *
+ * Fired by `woocommerce_after_template_part`.
+ *
+ * @internal WordPress action hook
+ * @param string $template_name Template part name.
+ */
+function display_authentic_image_notice_hook( string $template_name ): void {
+	if ( 'single-product/product-image.php' !== $template_name ) {
+		return;
+	}
+
+	$product = wc_get_product( get_the_ID() );
+
+	if ( ! $product instanceof \WC_Product ) {
+		return;
+	}
+
+	$label = get_option( AUTHENTIC_BADGE_LABEL_OPTION );
+
+	if ( ! is_string( $label ) ) {
+		$label = '';
+	}
+
+	$message = get_option( AUTHENTIC_MESSAGE_OPTION );
+
+	if ( ! is_string( $message ) ) {
+		$message = '';
+	}
+
+	if ( '' === $label && '' === $message ) {
+		return;
+	}
+
+	wp_enqueue_style( 'authenticimages-classic-badge' );
+	wp_enqueue_style( 'authenticimages-classic-message' );
+	wp_enqueue_style( 'authenticimages-classic-notice' );
+	wp_enqueue_script( 'authenticimages-classic-notice-scripts' );
+
+	echo '<p class="authenticimages-notice">';
+
+	if ( '' !== $label ) {
+		printf( '<span class="authenticimages-badge">%s</span>', esc_html( $label ) );
+	}
+
+	if ( '' !== $message ) {
+		printf( '<span class="authenticimages-message">%s</span>', esc_html( $message ) );
+	}
+
+	echo '</p>';
 }
