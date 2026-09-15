@@ -4,40 +4,6 @@ Authentic Images implements a stable public API intended for use by third-party 
 
 ## Hooks
 
-### Filters
-
-#### `authenticimages_badge_single_product_hook`
-
-Filter to modify which `single-product` [WooCommerce template hook](https://developer.woocommerce.com/docs/theming/theme-development/template-structure/#changing-templates-via-hooks) (or theme hook) displays the badge.
-
-```php
-add_filter( 'authenticimages_badge_single_product_hook', function ( $name ) {
-    return 'woocommerce_before_single_product';
-} );
-```
-
-| Parameter | Type     | Description                                              |
-| --------- | -------- | -------------------------------------------------------- |
-| `$name`   | `string` | Hook name. Default `woocommerce_single_product_summary`. |
-
-Must return a non-empty string. Added in 1.0.0.
-
-#### `authenticimages_badge_single_product_priority`
-
-Filters the priority used for [hooking](https://developer.woocommerce.com/docs/theming/theme-development/template-structure/#changing-templates-via-hooks) the badge to the `single-product` classic templates.
-
-```php
-add_filter( 'authenticimages_badge_single_product_priority', function ( $priority ) {
-    return 5;
-} );
-```
-
-| Parameter   | Type  | Description                  |
-| ----------- | ----- | ---------------------------- |
-| `$priority` | `int` | Hook priority. Default `15`. |
-
-Must return an integer. Added in 1.0.0.
-
 ## Script and style handles
 
 These handles are registered by the plugin and can be used as dependencies in third-party enqueues.
@@ -51,6 +17,10 @@ Front-end badge stylesheet for classic (non-block) themes. Registered—but not 
 #### `authenticimages-classic-message`
 
 Front-end message stylesheet for classic (non-block) themes. Registered—but not automatically enqueued—on `wp_enqueue_scripts`. Use `wp_enqueue_style( 'authenticimages-classic-message' )` or declare it as a dependency to load it on demand. Added in 1.0.0.
+
+#### `authenticimages-classic-notice`
+
+Front-end notice stylesheet for classic (non-block) themes. Registered—but not automatically enqueued—on `wp_enqueue_scripts`. Use `wp_enqueue_style( 'authenticimages-classic-notice' )` or declare it as a dependency to load it on demand. Added in 1.0.0.
 
 #### `authenticimages-admin`
 
@@ -71,6 +41,10 @@ Admin JavaScript enqueued on `enqueue_block_assets` in wp-admin for editor canva
 These classes are part of the public API and stable across versions. They can be targeted for custom styling.
 
 ### Front-end classes
+
+#### `.authenticimages-notice`
+
+Applied to the classic Authentic Image Notice container. Added in 1.0.0.
 
 #### `.authenticimages-badge`
 

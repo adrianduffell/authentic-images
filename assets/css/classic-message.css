@@ -5,6 +5,16 @@
  * Licensed under the GNU General Public License v2.0 or later.
  */
 
-.authenticimages-message {
-	font-weight: 700;
+.authenticimages-badge + .authenticimages-message {
+
+	/*
+	 * When placed next to the badge, use the same properties as the badge
+	 * to ensure correct alignment.
+	 */
+	display: block;
+	width: fit-content;
+	padding: calc(1cap * (100 - var(--authenticimages-badge-density)) / var(--authenticimages-badge-density) / 2) 0;
+	line-height: 1;
+	text-box-trim: trim-both;
+	text-box-edge: cap alphabetic;
 }

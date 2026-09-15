@@ -40,6 +40,7 @@ function deinit_enqueue(): void {
 	remove_action( 'enqueue_block_editor_assets', 'AuthenticImages\enqueue_build_assets_hook' );
 	wp_deregister_style( 'authenticimages-classic-badge' );
 	wp_deregister_style( 'authenticimages-classic-message' );
+	wp_deregister_style( 'authenticimages-classic-notice' );
 	wp_dequeue_style( 'authenticimages-admin' );
 	wp_deregister_style( 'authenticimages-admin' );
 	wp_dequeue_style( 'authenticimages-admin-editor' );
@@ -108,6 +109,18 @@ function register_classic_styles_hook(): void {
 	wp_register_style(
 		'authenticimages-classic-message',
 		plugin_dir_url( PLUGIN_FILE ) . 'assets/css/classic-message.css',
+		array(),
+		VERSION
+	);
+
+	/**
+	 * Classic theme front-end notice stylesheet.
+	 *
+	 * @since 1.0.0
+	 */
+	wp_register_style(
+		'authenticimages-classic-notice',
+		plugin_dir_url( PLUGIN_FILE ) . 'assets/css/classic-notice.css',
 		array(),
 		VERSION
 	);
