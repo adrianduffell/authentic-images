@@ -86,6 +86,9 @@ describe( 'Edit', () => {
 		expect(
 			screen.getByTestId( 'authentic-image-notice-editor' )
 		).toBeVisible();
+		expect( mockUseBlockProps ).toHaveBeenCalledWith( {
+			className: 'authenticimages-notice',
+		} );
 		expect( mockUseInnerBlocksProps ).toHaveBeenCalledTimes( 1 );
 		const settings = mockUseInnerBlocksProps.mock.calls[ 0 ][ 1 ];
 		expect( settings.template ).toEqual( [
@@ -109,6 +112,9 @@ describe( 'Save', () => {
 		expect(
 			screen.getByTestId( 'authentic-image-notice-save' )
 		).toBeVisible();
+		expect( mockUseBlockProps.save ).toHaveBeenCalledWith( {
+			className: 'authenticimages-notice',
+		} );
 		expect( mockUseInnerBlocksProps.save ).toHaveBeenCalledTimes( 1 );
 	} );
 } );

@@ -6,7 +6,9 @@
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 
 export function Save(): JSX.Element {
-	const blockProps = useBlockProps.save();
+	const blockProps = useBlockProps.save( {
+		className: 'authenticimages-notice',
+	} );
 	const innerBlocksProps = useInnerBlocksProps.save( blockProps );
 
 	return <div { ...innerBlocksProps } />;
