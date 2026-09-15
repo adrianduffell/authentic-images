@@ -147,13 +147,7 @@ function display_authentic_image_notice_hook( string $template_name ): void {
 	wp_enqueue_style( 'authenticimages-classic-badge' );
 	wp_enqueue_style( 'authenticimages-classic-message' );
 	wp_enqueue_style( 'authenticimages-classic-notice' );
-	wp_enqueue_script(
-		'authenticimages-classic-notice',
-		plugin_dir_url( PLUGIN_FILE ) . 'assets/js/classic-notice.js',
-		array( 'jquery', 'wc-single-product' ),
-		VERSION,
-		true
-	);
+	wp_enqueue_script( 'authenticimages-classic-notice-scripts' );
 
 	echo '<p class="authenticimages-notice">';
 

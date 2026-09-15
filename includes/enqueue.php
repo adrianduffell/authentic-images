@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
  */
 function enqueue_init(): void {
 	add_action( 'wp_enqueue_scripts', 'AuthenticImages\register_classic_styles_hook' );
+	add_action( 'wp_enqueue_scripts', 'AuthenticImages\register_classic_scripts_hook' );
 	add_action( 'enqueue_block_assets', 'AuthenticImages\enqueue_admin_canvas_scripts_hook' );
 	add_action( 'wp_head', 'AuthenticImages\output_badge_style_css_variables_hook' );
 	add_action( 'admin_enqueue_scripts', 'AuthenticImages\enqueue_admin_styles_hook' );
@@ -33,6 +34,7 @@ function enqueue_init(): void {
  */
 function deinit_enqueue(): void {
 	remove_action( 'wp_enqueue_scripts', 'AuthenticImages\register_classic_styles_hook' );
+	remove_action( 'wp_enqueue_scripts', 'AuthenticImages\register_classic_scripts_hook' );
 	remove_action( 'enqueue_block_assets', 'AuthenticImages\enqueue_admin_canvas_scripts_hook' );
 	remove_action( 'wp_head', 'AuthenticImages\output_badge_style_css_variables_hook' );
 	remove_action( 'admin_enqueue_scripts', 'AuthenticImages\enqueue_admin_styles_hook' );
@@ -41,8 +43,8 @@ function deinit_enqueue(): void {
 	wp_deregister_style( 'authenticimages-classic-badge' );
 	wp_deregister_style( 'authenticimages-classic-message' );
 	wp_deregister_style( 'authenticimages-classic-notice' );
-	wp_dequeue_script( 'authenticimages-classic-notice' );
-	wp_deregister_script( 'authenticimages-classic-notice' );
+	wp_dequeue_script( 'authenticimages-classic-notice-scripts' );
+	wp_deregister_script( 'authenticimages-classic-notice-scripts' );
 	wp_dequeue_style( 'authenticimages-admin' );
 	wp_deregister_style( 'authenticimages-admin' );
 	wp_dequeue_style( 'authenticimages-admin-editor' );
@@ -125,6 +127,28 @@ function register_classic_styles_hook(): void {
 		plugin_dir_url( PLUGIN_FILE ) . 'assets/css/classic-notice.css',
 		array(),
 		VERSION
+	);
+}
+
+/**
+ * Register classic theme front-end scripts.
+ *
+ * Fired by `wp_enqueue_scripts`.
+ *
+ * @internal WordPress action hook
+ */
+function register_classic_scripts_hook(): void {
+	/**
+	 * Classic theme front-end notice script.
+	 *
+	 * @since 1.0.0
+	 */
+	wp_register_script(
+		'authenticimages-classic-notice-scripts',
+		plugin_dir_url( PLUGIN_FILE ) . 'assets/js/classic-notice.js',
+		array( 'jquery', 'wc-single-product' ),
+		VERSION,
+		true
 	);
 }
 

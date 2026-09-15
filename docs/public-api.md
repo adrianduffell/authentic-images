@@ -62,7 +62,7 @@ Admin stylesheet enqueued on all `admin_enqueue_scripts` pages. Added in 1.0.0.
 
 ### Scripts
 
-#### `authenticimages-classic-notice`
+#### `authenticimages-classic-notice-scripts`
 
 Scripts for the notice on classic themes. Contains integration with WooCommerce gallery. Added in 1.0.0.
 
