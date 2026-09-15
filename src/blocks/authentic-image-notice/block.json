@@ -27,6 +27,15 @@
 			"blockGap": true,
 			"margin": true,
 			"padding": true
+		},
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"attributes": {
+		"fontSize": {
+			"type": "string",
+			"default": "small"
 		}
 	},
 	"variations": [

@@ -62,6 +62,10 @@ Applied to the message element. Used by both the block renderer and classic them
 
 Container to group the badge and message. The default layout is horizontal with a `0.33em` block gap, and the badge and message appearing side-by-side. Added in 1.0.0.
 
+| Attribute  | Type     | Default | Description                                |
+| ---------- | -------- | ------- | ------------------------------------------ |
+| `fontSize` | `string` | `small` | Text size preset (e.g. `small`, `medium`). |
+
 ### `authenticimages/authentic-badge`
 
 Displays the badge within the notice parent block on product pages. Added in 1.0.0.
@@ -93,10 +97,6 @@ Use the scale setting to control the height of the badge, and density (called "f
 ### `authenticimages/authentic-message`
 
 Displays the message within the notice parent block on product pages. Added in 1.0.0.
-
-| Attribute  | Type     | Default | Description                                |
-| ---------- | -------- | ------- | ------------------------------------------ |
-| `fontSize` | `string` | `small` | Text size preset (e.g. `small`, `medium`). |
 
 ## Non-Public API
 

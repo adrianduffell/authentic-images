@@ -14,14 +14,7 @@
 			"gradients": true
 		},
 		"typography": {
-			"fontSize": true,
 			"__experimentalFontWeight": true
-		}
-	},
-	"attributes": {
-		"fontSize": {
-			"type": "string",
-			"default": "small"
 		}
 	},
 	"editorScript": "file:./index.js",
