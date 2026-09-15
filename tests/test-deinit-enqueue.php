@@ -78,27 +78,6 @@ class Test_Deinit_Enqueue extends WP_UnitTestCase {
 		$this->assertFalse( has_action( 'enqueue_block_editor_assets', 'AuthenticImages\enqueue_build_assets_hook' ) );
 	}
 
-	public function test_deregisters_block_styles(): void {
-		// Arrange.
-		wp_register_style( 'authenticimages-badge-block', false, array(), 'test' );
-
-		// Act.
-		deinit_enqueue();
-
-		// Assert.
-		$this->assertFalse( wp_style_is( 'authenticimages-badge-block', 'registered' ) );
-	}
-
-	public function test_safely_handles_block_styles_not_registered(): void {
-		// Arrange.
-
-		// Act.
-		deinit_enqueue();
-
-		// Assert.
-		$this->assertFalse( wp_style_is( 'authenticimages-badge-block', 'registered' ) );
-	}
-
 	public function test_deregisters_admin_styles(): void {
 		// Arrange.
 		wp_register_style( 'authenticimages-admin', false, array(), 'test' );

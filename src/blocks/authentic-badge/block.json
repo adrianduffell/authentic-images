@@ -9,5 +9,7 @@
 	"supports": {
 		"html": false
 	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
 	"textdomain": "authenticimages"
 }

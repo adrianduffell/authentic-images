@@ -8,18 +8,31 @@
  */
 
 use function AuthenticImages\deinit_blocks;
-use function AuthenticImages\init_blocks;
+use function AuthenticImages\register_authentic_image_notice_block;
 
 class Test_Register_Authentic_Image_Notice_Block extends WP_UnitTestCase {
 
-	public function test_notice_is_registered_after_init_blocks(): void {
+	public function test_notice_registers_editor_script(): void {
 		// Arrange.
 		deinit_blocks();
+		wp_deregister_script( 'authenticimages-authentic-image-notice-editor-script' );
 
 		// Act.
-		init_blocks();
+		register_authentic_image_notice_block();
 
 		// Assert.
-		$this->assertTrue( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-image-notice' ) );
+		$this->assertTrue( wp_script_is( 'authenticimages-authentic-image-notice-editor-script', 'registered' ) );
+	}
+
+	public function test_notice_registers_style(): void {
+		// Arrange.
+		deinit_blocks();
+		wp_deregister_style( 'authenticimages-authentic-image-notice-style' );
+
+		// Act.
+		register_authentic_image_notice_block();
+
+		// Assert.
+		$this->assertTrue( wp_style_is( 'authenticimages-authentic-image-notice-style', 'registered' ) );
 	}
 }

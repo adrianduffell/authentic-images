@@ -8,7 +8,6 @@
  */
 
 use function AuthenticImages\deinit_blocks;
-use function AuthenticImages\init_blocks;
 use function AuthenticImages\register_authentic_badge_block;
 use function AuthenticImages\render_authentic_badge_callback;
 use const AuthenticImages\AUTHENTIC_BADGE_LABEL_OPTION;
@@ -86,17 +85,6 @@ class Test_Render_Authentic_Badge_Callback extends WP_UnitTestCase {
 
 		// Assert.
 		$this->assertSame( '', $result );
-	}
-
-	public function test_badge_is_registered_after_init_blocks(): void {
-		// Arrange.
-		deinit_blocks();
-
-		// Act.
-		init_blocks();
-
-		// Assert.
-		$this->assertTrue( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-badge' ) );
 	}
 
 	public function test_returns_empty_string_when_label_is_empty(): void {

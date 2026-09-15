@@ -24,5 +24,7 @@
 			"default": "small"
 		}
 	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
 	"textdomain": "authenticimages"
 }

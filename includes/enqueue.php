@@ -23,8 +23,6 @@ function enqueue_init(): void {
 	add_action( 'wp_head', 'AuthenticImages\output_badge_style_css_variables_hook' );
 	add_action( 'admin_enqueue_scripts', 'AuthenticImages\enqueue_admin_styles_hook' );
 	add_action( 'enqueue_block_editor_assets', 'AuthenticImages\enqueue_build_assets_hook' );
-
-	register_block_styles();
 }
 
 /**
@@ -55,8 +53,6 @@ function deinit_enqueue(): void {
 	wp_deregister_script( 'authenticimages-welcome-page' );
 	wp_dequeue_script( 'authenticimages-editor' );
 	wp_deregister_script( 'authenticimages-editor' );
-	wp_dequeue_style( 'authenticimages-badge-block' );
-	wp_deregister_style( 'authenticimages-badge-block' );
 }
 
 /**
@@ -183,38 +179,6 @@ function output_badge_style_css_variables_hook(): void {
 	);
 
 	echo '<style>:root { ' . esc_html( implode( '; ', $declarations ) ) . '; }</style>';
-}
-
-/**
- * Register the block stylesheet so it only loads when the authentic badge block is rendered.
- *
- * The message block doesn't have any styles currently.
- *
- * @internal
- */
-function register_block_styles(): void {
-	$asset_file = plugin_dir_path( PLUGIN_FILE ) . 'build/index.asset.php';
-
-	if ( ! file_exists( $asset_file ) ) {
-		return;
-	}
-
-	$asset = require $asset_file;
-
-	/**
-	 * Block stylesheet for the authentic badge block.
-	 *
-	 * @internal
-	 */
-	wp_enqueue_block_style(
-		'authenticimages/authentic-badge',
-		array(
-			'handle' => 'authenticimages-badge-block',
-			'src'    => plugin_dir_url( PLUGIN_FILE ) . 'build/style-index.css',
-			'deps'   => array(),
-			'ver'    => $asset['version'],
-		)
-	);
 }
 
 /**

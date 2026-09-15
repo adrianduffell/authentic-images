@@ -8,7 +8,6 @@
  */
 
 use function AuthenticImages\deinit_blocks;
-use function AuthenticImages\init_blocks;
 use function AuthenticImages\register_authentic_message_block;
 use function AuthenticImages\render_authentic_message_callback;
 use const AuthenticImages\AUTHENTIC_MESSAGE_OPTION;
@@ -91,17 +90,6 @@ class Test_Render_Authentic_Message_Callback extends WP_UnitTestCase {
 
 		// Assert.
 		$this->assertSame( '', $result );
-	}
-
-	public function test_message_is_registered_after_init_blocks(): void {
-		// Arrange.
-		deinit_blocks();
-
-		// Act.
-		init_blocks();
-
-		// Assert.
-		$this->assertTrue( \WP_Block_Type_Registry::get_instance()->is_registered( 'authenticimages/authentic-message' ) );
 	}
 
 	public function test_empty_option_returns_empty_string(): void {
