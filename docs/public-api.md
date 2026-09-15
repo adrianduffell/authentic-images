@@ -94,9 +94,10 @@ Use the scale setting to control the height of the badge, and density (called "f
 
 Displays the message within the notice parent block on product pages. Added in 1.0.0.
 
-| Attribute  | Type     | Default | Description                                |
-| ---------- | -------- | ------- | ------------------------------------------ |
-| `fontSize` | `string` | `small` | Text size preset (e.g. `small`, `medium`). |
+| Attribute    | Type     | Default | Description                                |
+| ------------ | -------- | ------- | ------------------------------------------ |
+| `fontSize`   | `string` | `small` | Text size preset (e.g. `small`, `medium`). |
+| `fontWeight` | `string` | —       | Numeric font-weight value.                 |
 
 ## Non-Public API
 
