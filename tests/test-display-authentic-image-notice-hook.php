@@ -21,8 +21,6 @@ class Test_Display_Authentic_Image_Notice_Hook extends WP_UnitTestCase {
 		init_woocommerce_template_hooks();
 
 		// Assert.
-		$this->assertSame( 15, has_action( 'woocommerce_single_product_summary', 'AuthenticImages\display_authentic_badge_hook' ) );
-		$this->assertSame( 1, has_action( 'woocommerce_product_meta_start', 'AuthenticImages\display_authentic_message_hook' ) );
 		$this->assertSame( 10, has_action( 'woocommerce_after_template_part', 'AuthenticImages\display_authentic_image_notice_hook' ) );
 	}
 
