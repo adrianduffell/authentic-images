@@ -2,42 +2,6 @@
 
 Authentic Images implements a stable public API intended for use by third-party code. All items listed here increment the plugin's MAJOR semver version when any known incompatible changes are made.
 
-## Hooks
-
-### Filters
-
-#### `authenticimages_badge_single_product_hook`
-
-Filter to modify which `single-product` [WooCommerce template hook](https://developer.woocommerce.com/docs/theming/theme-development/template-structure/#changing-templates-via-hooks) (or theme hook) displays the badge.
-
-```php
-add_filter( 'authenticimages_badge_single_product_hook', function ( $name ) {
-    return 'woocommerce_before_single_product';
-} );
-```
-
-| Parameter | Type     | Description                                              |
-| --------- | -------- | -------------------------------------------------------- |
-| `$name`   | `string` | Hook name. Default `woocommerce_single_product_summary`. |
-
-Must return a non-empty string. Added in 1.0.0.
-
-#### `authenticimages_badge_single_product_priority`
-
-Filters the priority used for [hooking](https://developer.woocommerce.com/docs/theming/theme-development/template-structure/#changing-templates-via-hooks) the badge to the `single-product` classic templates.
-
-```php
-add_filter( 'authenticimages_badge_single_product_priority', function ( $priority ) {
-    return 5;
-} );
-```
-
-| Parameter   | Type  | Description                  |
-| ----------- | ----- | ---------------------------- |
-| `$priority` | `int` | Hook priority. Default `15`. |
-
-Must return an integer. Added in 1.0.0.
-
 ## Script and style handles
 
 These handles are registered by the plugin and can be used as dependencies in third-party enqueues.

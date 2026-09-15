@@ -22,21 +22,6 @@ async function getActiveThemeSlug( requestUtils ) {
 }
 
 /**
- * Determines whether the active theme is a block theme via the WordPress REST API.
- *
- * @param {Object} requestUtils - Playwright REST request utilities.
- * @return {Promise<boolean>} Whether the active theme is a block theme.
- */
-async function isBlockTheme( requestUtils ) {
-	const [ activeTheme ] = await requestUtils.rest( {
-		method: 'GET',
-		path: '/wp/v2/themes',
-		params: { status: 'active' },
-	} );
-	return activeTheme.is_block_theme;
-}
-
-/**
  * Returns the current viewport as a `{width}x{height}` string.
  *
  * @param {import('@playwright/test').Page} page - The Playwright page object.
@@ -51,7 +36,6 @@ test( 'Shopping flow', async ( { requestUtils, browser } ) => {
 	// Arrange.
 	const runId = Date.now();
 	const themeSlug = await getActiveThemeSlug( requestUtils );
-	const blockTheme = await isBlockTheme( requestUtils );
 
 	const product = await requestUtils.rest( {
 		method: 'POST',
@@ -84,11 +68,6 @@ test( 'Shopping flow', async ( { requestUtils, browser } ) => {
 	await expect( customerPage.locator( '#wpadminbar' ) ).toHaveCount( 0 );
 
 	const badge = customerPage.locator( '.authenticimages-badge' );
-
-	test.fail(
-		! blockTheme,
-		'Badge and message are inserted more than once on classic themes.'
-	);
 
 	await expect( badge ).toBeVisible();
 	await expect( badge ).toHaveText( 'Authentic' );
