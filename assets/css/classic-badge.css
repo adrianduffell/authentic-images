@@ -12,7 +12,7 @@
 	color: var(--authenticimages-badge-text-color, unset);
 	border-radius: var(--authenticimages-badge-border-radius, unset);
 	font-weight: var(--authenticimages-badge-font-weight, unset);
-	font-size: calc(var(--authenticimages-context-font-size, 1em) * (1cap / 1em) * var(--authenticimages-badge-scale) / 100 * var(--authenticimages-badge-density) / 100 / (1cap / 1em));
+	font-size: calc(1em * var(--authenticimages-badge-scale) / 100 * var(--authenticimages-badge-density) / 100);
 	padding: calc(1cap * (100 - var(--authenticimages-badge-density)) / var(--authenticimages-badge-density) / 2);
 	line-height: 1;
 	text-box-trim: trim-both;
