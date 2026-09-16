@@ -17,6 +17,7 @@
 	font-size: calc(1em * var(--authenticimages-badge-scale) / 100 * var(--authenticimages-badge-density) / 100);
 	padding: calc(1cap * (100 - var(--authenticimages-badge-density)) / var(--authenticimages-badge-density) / 2);
 	line-height: 1;
+	white-space: nowrap;
 	text-box-trim: trim-both;
 	text-box-edge: cap alphabetic;
 }
